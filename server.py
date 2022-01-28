@@ -40,6 +40,8 @@ class MyWebServer(socketserver.BaseRequestHandler):
         self.data = self.request.recv(1024).strip()
 
         dataLines = self.data.decode("utf-8").split("\n")#get each line of request
+        if len(dataLines) == 0:
+            return#ignore odd behavoir with empty requests
         #deal with first line of header
         requestTypeName = dataLines[0].split(' ')[0]
         requestDirectory = dataLines[0].split(' ')[1]
