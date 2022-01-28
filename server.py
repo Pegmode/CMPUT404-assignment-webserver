@@ -53,19 +53,11 @@ class MyWebServer(socketserver.BaseRequestHandler):
 
             else:#Directory doesn't exist
                 self.request.sendall(bytearray("HTTP/1.1 404 Not Found\r\n",'utf-8'))
-                print("Got a request for file that doesn't exist")
+                #print("Got a request for file that doesn't exist")
 
         else:#Request isn't get
             self.request.sendall(bytearray("HTTP/1.1 405 Method Not Allowed\r\n",'utf-8'))
-            print("Got an unsupported request")
-
-        #print("RequestType: {}\nRequestDir: {}\ndata: {}".format(requestTypeName, requestDirectory,dataLines))
-        print("exists?: {}", os.path.isfile(G_DIRECTORY_ROOT + requestDirectory))
-        print("Filepath:" + requestDirectory)
-        print("EXT: " + requestDirectory[-5:])
-        print("\n")
-        #self.request.sendall(bytearray("OK",'utf-8'))
-        #self.request.sendall(bytearray("HTTP/1.1 200 OK\r\n", 'utf-8'))
+            #print("Got an unsupported request")
 
     def returnContent(self, ContentType, path):#return a valid file
         f = open(path)
@@ -76,15 +68,15 @@ class MyWebServer(socketserver.BaseRequestHandler):
     def parseAndHandleFile(self, requestDirectory):
         if requestDirectory[-5:] == ".html":
             self.returnContent("text/html", G_DIRECTORY_ROOT +  requestDirectory)
-            print("HTML page requested!")
+            #print("HTML page requested!")
 
         elif requestDirectory[-4:] == ".css":
             self.returnContent("text/css", G_DIRECTORY_ROOT +  requestDirectory)
-            print("CSS page requested!")
+            #print("CSS page requested!")
 
         else:
             self.request.sendall(bytearray("HTTP/1.1 404 Not Found\r\n",'utf-8'))
-            print("Got a request for an unsupported file")
+            #print("Got a request for an unsupported file")
     
 
 
