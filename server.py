@@ -47,11 +47,14 @@ class MyWebServer(socketserver.BaseRequestHandler):
         requestDirectory = dataLines[0].split(' ')[1]
 
         if requestTypeName == "GET":
-            if os.path.isfile(G_DIRECTORY_ROOT + requestDirectory):
+            if os.path.isfile(G_DIRECTORY_ROOT + requestDirectory):#test if file exists
                 self.parseAndHandleFile(requestDirectory)
 
-            elif os.path.isfile(G_DIRECTORY_ROOT + requestDirectory + "index.html"):
+            elif os.path.isfile(G_DIRECTORY_ROOT + requestDirectory + "index.html"):#test if index is found
                 self.parseAndHandleFile(requestDirectory+ "index.html")
+
+            elif os.path.isdir(G_DIRECTORY_ROOT + requestDirectory):#test for path correction
+                self.request.sendall(bytearray("HTTP/1.1 301 Moved Permanently\r\nLocation: {}\r\n".format(requestDirectory + '/'),'utf-8'))
 
             else:#Directory doesn't exist
                 self.request.sendall(bytearray("HTTP/1.1 404 Not Found\r\n",'utf-8'))
@@ -87,7 +90,7 @@ class MyWebServer(socketserver.BaseRequestHandler):
 if __name__ == "__main__":
     HOST, PORT = "localhost", 8080
 
-    print("Starting server....")
+    #print("Starting server....")
     socketserver.TCPServer.allow_reuse_address = True
     # Create the server, binding to localhost on port 8080
     server = socketserver.TCPServer((HOST, PORT), MyWebServer)
