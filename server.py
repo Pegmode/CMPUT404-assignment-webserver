@@ -46,17 +46,10 @@ class MyWebServer(socketserver.BaseRequestHandler):
 
         if requestTypeName == "GET":
             if os.path.isfile(G_DIRECTORY_ROOT + requestDirectory):
-                if requestDirectory[-5:] == ".html":
-                    self.returnContent("text/html", G_DIRECTORY_ROOT +  requestDirectory)
-                    print("HTML page requested!")
+                self.parseAndHandleFile(requestDirectory)
 
-                elif requestDirectory[-3:] == ".css":
-                    self.returnContent("text/css", G_DIRECTORY_ROOT +  requestDirectory)
-                    print("CSS page requested!")
-
-                else:
-                    self.request.sendall(bytearray("HTTP/1.1 404 Not Found\r\n",'utf-8'))
-                    print("Got a request for an unsupported file")
+            elif os.path.isfile(G_DIRECTORY_ROOT + requestDirectory + "index.html"):
+                self.parseAndHandleFile(requestDirectory+ "index.html")
 
             else:#Directory doesn't exist
                 self.request.sendall(bytearray("HTTP/1.1 404 Not Found\r\n",'utf-8'))
@@ -79,6 +72,20 @@ class MyWebServer(socketserver.BaseRequestHandler):
         msg = 'HTTP/1.1 200 OK\r\nContent-Type: {}\r\n\r\n{}'.format(ContentType, f.read())
         f.close() 
         self.request.sendall(bytearray(msg, "utf-8"))
+
+    def parseAndHandleFile(self, requestDirectory):
+        if requestDirectory[-5:] == ".html":
+            self.returnContent("text/html", G_DIRECTORY_ROOT +  requestDirectory)
+            print("HTML page requested!")
+
+        elif requestDirectory[-3:] == ".css":
+            self.returnContent("text/css", G_DIRECTORY_ROOT +  requestDirectory)
+            print("CSS page requested!")
+
+        else:
+            self.request.sendall(bytearray("HTTP/1.1 404 Not Found\r\n",'utf-8'))
+            print("Got a request for an unsupported file")
+    
 
 
 
