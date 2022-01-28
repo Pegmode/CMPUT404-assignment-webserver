@@ -78,7 +78,7 @@ class MyWebServer(socketserver.BaseRequestHandler):
             self.returnContent("text/html", G_DIRECTORY_ROOT +  requestDirectory)
             print("HTML page requested!")
 
-        elif requestDirectory[-3:] == ".css":
+        elif requestDirectory[-4:] == ".css":
             self.returnContent("text/css", G_DIRECTORY_ROOT +  requestDirectory)
             print("CSS page requested!")
 
