@@ -30,6 +30,7 @@ import pdb
 # try: curl -v -X GET http://127.0.0.1:8080/
 
 
+#GlobalDefines
 G_DIRECTORY_ROOT = "www"#content directory
 
 
@@ -45,16 +46,39 @@ class MyWebServer(socketserver.BaseRequestHandler):
 
         if requestTypeName == "GET":
             if os.path.isfile(G_DIRECTORY_ROOT + requestDirectory):
-                pass
+                if requestDirectory[-5:] == ".html":
+                    self.returnContent("text/html", G_DIRECTORY_ROOT +  requestDirectory)
+                    print("HTML page requested!")
+
+                elif requestDirectory[-3:] == ".css":
+                    self.returnContent("text/css", G_DIRECTORY_ROOT +  requestDirectory)
+                    print("CSS page requested!")
+
+                else:
+                    self.request.sendall(bytearray("HTTP/1.1 404 Not Found\r\n",'utf-8'))
+                    print("Got a request for an unsupported file")
+
             else:#Directory doesn't exist
                 self.request.sendall(bytearray("HTTP/1.1 404 Not Found\r\n",'utf-8'))
+                print("Got a request for file that doesn't exist")
+
         else:#Request isn't get
             self.request.sendall(bytearray("HTTP/1.1 405 Method Not Allowed\r\n",'utf-8'))
+            print("Got an unsupported request")
 
-        print("RequestType: {}\nRequestDir: {}\ndata: {}".format(requestTypeName, requestDirectory,dataLines))
+        #print("RequestType: {}\nRequestDir: {}\ndata: {}".format(requestTypeName, requestDirectory,dataLines))
         print("exists?: {}", os.path.isfile(G_DIRECTORY_ROOT + requestDirectory))
+        print("Filepath:" + requestDirectory)
+        print("EXT: " + requestDirectory[-5:])
+        print("\n")
         #self.request.sendall(bytearray("OK",'utf-8'))
         #self.request.sendall(bytearray("HTTP/1.1 200 OK\r\n", 'utf-8'))
+
+    def returnContent(self, ContentType, path):#return a valid file
+        f = open(path)
+        msg = 'HTTP/1.1 200 OK\r\nContent-Type: {}\r\n\r\n{}'.format(ContentType, f.read())
+        f.close() 
+        self.request.sendall(bytearray(msg, "utf-8"))
 
 
 
@@ -62,6 +86,7 @@ class MyWebServer(socketserver.BaseRequestHandler):
 if __name__ == "__main__":
     HOST, PORT = "localhost", 8080
 
+    print("Starting server....")
     socketserver.TCPServer.allow_reuse_address = True
     # Create the server, binding to localhost on port 8080
     server = socketserver.TCPServer((HOST, PORT), MyWebServer)
